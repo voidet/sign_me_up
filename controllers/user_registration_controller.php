@@ -30,9 +30,10 @@ class UserRegistrationController extends AppController {
 			}
 			$inactive_user = $this->UserRegistration->find('first', array('conditions' => array('activation_code' => $activation_code), 'recursive' => -1));
 			if (!empty($inactive_user)) {
-				$inactive_user['UserRegistration']['active'] = true;
-				$inactive_user['UserRegistration']['activation_code'] = null;
-				if ($this->UserRegistration->save($inactive_user)) {
+				$this->UserRegistration->id = $inactive_user['UserRegistration']['id'];
+				$data['UserRegistration']['active'] = true;
+				$data['UserRegistration']['activation_code'] = null;
+				if ($this->UserRegistration->save($data)) {
 					$this->Session->setFlash('Thank you '.$inactive_user['UserRegistration']['username'].', your account is now active');
 					$this->redirect($this->Auth->loginAction);
 				}

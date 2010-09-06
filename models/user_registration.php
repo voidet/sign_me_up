@@ -41,10 +41,7 @@ class UserRegistration extends User {
 
 	public function confirmPassword($field, $password1, $password2) {
 		if ($this->data['UserRegistration'][$password1] == $this->data['UserRegistration'][$password2]) {
-			$this->data['UserRegistration']['password'] = $this->data['UserRegistration']['password1'];
-
-			$UserModel = ClassRegistry::init('User');
-			$this->data = $UserModel->hashPasswords($this->data, $this->alias);
+			$this->data['UserRegistration']['password'] = Security::hash($this->data['UserRegistration']['password1'], null, true);
 			return true;
 		}
 	}
