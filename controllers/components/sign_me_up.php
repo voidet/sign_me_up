@@ -39,7 +39,7 @@ class SignMeUpComponent extends Object {
 			$this->controller->loadModel($model);
 			$this->controller->{$model}->set($this->controller->data);
 			if ($this->controller->{$model}->validates()) {
-				$this->data[$model]['activation_code'] = $this->controller->{$model}->generateActivationCode($this->controller->data);
+				$this->controller->data[$model]['activation_code'] = $this->controller->{$model}->generateActivationCode($this->controller->data);
 				if ($this->controller->{$model}->save($this->controller->data, false) && $this->__sendSignupEmail($this->controller->data[$model])) {
 					$this->controller->redirect(array('action' => 'activate'));
 				}
