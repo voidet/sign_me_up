@@ -74,7 +74,7 @@ class SignMeUpComponent extends Object {
 				$data[$model]['activation_code'] = null;
 				if ($this->controller->{$model}->save($data)) {
 					$this->Session->setFlash('Thank you '.$inactive_user[$model]['username'].', your account is now active');
-					$this->redirect($this->Auth->loginAction);
+					$this->controller->redirect($this->Auth->loginAction);
 				}
 			}
 		}
