@@ -25,7 +25,7 @@ class SignMeUpComponent extends Object {
 		if (Configure::read('SignMeUp.email_layout')) {
 			$this->Email->layout = Configure::read('SignMeUp.email_layout');
 		}
-		$this->Email->sendAs = 'text';
+		$this->Email->sendAs = Configure::read('SignMeUp.type');
 		$this->Email->subject = str_replace('%username%', $user['username'], Configure::read('SignMeUp.subject'));
 		$this->Email->to = $user['username'].' <'.$user['email'].'>';
 		$this->Email->template = Configure::read('SignMeUp.template');
