@@ -8,11 +8,16 @@ Install the plugin:
 	cd myapp/app/plugins/
 	git clone git@github.com:voidet/sign_me_up.git grey_tables
 
-To attach the plugin to a particular model (User/Member/Pimp) simply add in the plugin's component in your chosen controller:
+To attach the plugin to a particular model (User/Member/Pimp) simply add in the plugin's component in your chosen controller & model:
 
 	class UsersController extends AppController {
 
 		public $components = array('SignMeUp.SignMeUp');
+
+
+	class User extends AppModel {
+
+		public $actsAs = array('SignMeUp.SignMeUp');
 
 Next up create the register & activate methods in your controller via:
 
