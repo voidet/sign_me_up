@@ -1,11 +1,7 @@
 <?php
 
-App::import('Model', 'User');
+class SignMeUpBehavior extends ModelBehavior {
 
-class UserRegistration extends User {
-
-	public $name = 'UserRegistration';
-	public $useTable = 'users';
 	public $validate = array(
 		'username' => array(
 			'pattern' => array(
@@ -39,6 +35,10 @@ class UserRegistration extends User {
 		),
 	);
 
+	public function beforeValidate(&$model) {
+		$model->validate = array_merge($this->validate, $model->validate);
+	}
+
 	public function confirmPassword($field, $password1, $password2) {
 		if ($this->data['UserRegistration'][$password1] == $this->data['UserRegistration'][$password2]) {
 			$this->data['UserRegistration']['password'] = Security::hash($this->data['UserRegistration']['password1'], null, true);
@@ -46,8 +46,8 @@ class UserRegistration extends User {
 		}
 	}
 
-	public function generateActivationCode() {
-		return Security::hash(serialize($this->data).microtime().rand(1,100), null, true);
+	public function generateActivationCode($data) {
+		return Security::hash(serialize($data).microtime().rand(1,100), null, true);
 	}
 
 }
