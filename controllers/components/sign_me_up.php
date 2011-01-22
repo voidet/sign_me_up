@@ -55,7 +55,11 @@ class SignMeUpComponent extends Object {
 	}
 
 	public function activate() {
-		$activation_code = $this->controller->params['activation_code'];
+
+		if (!empty($this->controller->params['activation_code'])) {
+			$activation_code = $this->controller->params['activation_code'];
+		}
+
 		if (!empty($activation_code) || !empty($this->data)) {
 			if (!empty($this->data)) {
 				$activation_code = $this->data['UserRegistration']['activation_code'];
