@@ -2,7 +2,7 @@
 
 class SignMeUpComponent extends Object {
 
-	public $components = array('Email', 'Auth');
+	public $components = array('Session', 'Email', 'Auth');
 	public $helpers = array('Form', 'Html');
 	public $name = 'SignMeUp';
 	public $uses = array('SignMeUp');
@@ -54,18 +54,22 @@ class SignMeUpComponent extends Object {
 		}
 	}
 
-	public function activate($activation_code = '') {
+	public function activate() {
+		$activation_code = $this->controller->params['activation_code'];
 		if (!empty($activation_code) || !empty($this->data)) {
 			if (!empty($this->data)) {
 				$activation_code = $this->data['UserRegistration']['activation_code'];
 			}
-			$inactive_user = $this->UserRegistration->find('first', array('conditions' => array('activation_code' => $activation_code), 'recursive' => -1));
+
+			$model = $this->controller->modelClass;
+			$this->controller->loadModel($model);
+			$inactive_user = $this->controller->{$model}->find('first', array('conditions' => array('activation_code' => $activation_code), 'recursive' => -1));
 			if (!empty($inactive_user)) {
-				$this->UserRegistration->id = $inactive_user['UserRegistration']['id'];
-				$data['UserRegistration']['active'] = true;
-				$data['UserRegistration']['activation_code'] = null;
-				if ($this->UserRegistration->save($data)) {
-					$this->Session->setFlash('Thank you '.$inactive_user['UserRegistration']['username'].', your account is now active');
+				$this->controller->{$model}->id = $inactive_user[$model]['id'];
+				$data[$model]['active'] = true;
+				$data[$model]['activation_code'] = null;
+				if ($this->controller->{$model}->save($data)) {
+					$this->Session->setFlash('Thank you '.$inactive_user[$model]['username'].', your account is now active');
 					$this->redirect($this->Auth->loginAction);
 				}
 			}
