@@ -60,12 +60,13 @@ class SignMeUpComponent extends Object {
 		}
 
 		if (!empty($activation_code) || !empty($this->controller->data)) {
+			$model = $this->controller->modelClass;
+			$this->controller->loadModel($model);
+
 			if (!empty($this->controller->data)) {
 				$activation_code = $this->controller->data[$model]['activation_code'];
 			}
 
-			$model = $this->controller->modelClass;
-			$this->controller->loadModel($model);
 			$inactive_user = $this->controller->{$model}->find('first', array('conditions' => array('activation_code' => $activation_code), 'recursive' => -1));
 			if (!empty($inactive_user)) {
 				$this->controller->{$model}->id = $inactive_user[$model]['id'];
@@ -75,6 +76,8 @@ class SignMeUpComponent extends Object {
 					$this->Session->setFlash('Thank you '.$inactive_user[$model]['username'].', your account is now active');
 					$this->controller->redirect($this->Auth->loginAction);
 				}
+			} else {
+				$this->Session->setFlash('Sorry, that code is incorrect.');
 			}
 		}
 	}

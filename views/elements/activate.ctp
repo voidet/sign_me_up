@@ -3,5 +3,5 @@
 <?php
 echo $this->Form->create();
 echo $this->Form->input('activation_code');
-echo $this->Form->submit();
+echo $this->Form->end('Activate Account');
 ?>
