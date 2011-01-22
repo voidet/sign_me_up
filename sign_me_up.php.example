@@ -1,0 +1,10 @@
+<?php
+
+$config['SignMeUp'] = array(
+	'from_email' => 'MyDomain.com <admin@mydomain.com>',
+	'email_layout' => 'default',
+	'subject' => 'Welcome to Mydomain.com %username%',
+	'template' => 'welcome',
+	'type' => 'text',
+	'xMailer' => 'Mydomain.com Email',
+);
