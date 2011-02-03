@@ -35,13 +35,14 @@ class SignMeUpBehavior extends ModelBehavior {
 		),
 	);
 
-	public function beforeValidate(&$model) {
-		$model->validate = array_merge($this->validate, $model->validate);
+	public function beforeValidate(&$Model) {
+		$this->model = $Model;
+		$this->model->validate = array_merge($this->validate, $this->model->validate);
 	}
 
 	public function confirmPassword($field, $password1, $password2) {
-		if ($this->data['UserRegistration'][$password1] == $this->data['UserRegistration'][$password2]) {
-			$this->data['UserRegistration']['password'] = Security::hash($this->data['UserRegistration']['password1'], null, true);
+		if ($this->model->data[$this->model->alias]['password1'] == $this->model->data[$this->model->alias]['password2']) {
+			$this->model->data[$this->model->alias]['password'] = Security::hash($this->model->data[$this->model->alias]['password1'], null, true);
 			return true;
 		}
 	}
