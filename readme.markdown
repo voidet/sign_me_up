@@ -6,7 +6,7 @@ Sign Me Up is a CakePHP plugin that takes out 99% of the work needed to develop 
 Install the plugin:
 
 	cd myapp/app/plugins/
-	git clone git@github.com:voidet/sign_me_up.git grey_tables
+	git clone git@github.com:voidet/sign_me_up.git sign_me_up
 
 To attach the plugin to a particular model (User/Member/Pimp) simply add in the plugin's component in your chosen controller & model:
 
