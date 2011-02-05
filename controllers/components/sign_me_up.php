@@ -10,7 +10,7 @@ class SignMeUpComponent extends Object {
 	function initialize(&$controller, $settings = array()) {
 		$this->controller = &$controller;
 		if ($this->Auth->user()) {
-			$this->redirect($this->Auth->loginRedirect);
+			$this->controller->redirect($this->Auth->loginRedirect);
 		} else {
 			$this->Auth->allow('register', 'activate');
 		}
