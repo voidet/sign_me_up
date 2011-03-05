@@ -61,7 +61,7 @@ class SignMeUpComponent extends Object {
 		}
 	}
 
-	protected function __sendActivationEmail($userData, $template) {
+	protected function __sendActivationEmail($userData) {
 		$this->__setUpEmailParams($userData);
 		$this->Email->template = Configure::read('SignMeUp.activation_template');
 		if ($this->Email->send()) {
@@ -69,7 +69,7 @@ class SignMeUpComponent extends Object {
 		}
 	}
 
-	protected function __sendWelcomeEmail($userData, $template) {
+	protected function __sendWelcomeEmail($userData) {
 		$this->__setUpEmailParams($userData);
 		$this->Email->template = Configure::read('SignMeUp.welcome_template');
 		if ($this->Email->send()) {
