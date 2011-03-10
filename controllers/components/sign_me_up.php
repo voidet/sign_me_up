@@ -6,6 +6,8 @@ class SignMeUpComponent extends Object {
 	public $defaults = array(
 		'activation_field' => 'activation_code',
 		'useractive_field' => 'active',
+		'username_field' => 'username',
+		'email_field' => 'email',
 	);
 	public $helpers = array('Form', 'Html');
 	public $name = 'SignMeUp';
@@ -21,15 +23,23 @@ class SignMeUpComponent extends Object {
 		if (Configure::load('sign_me_up') === false) {
 			die ('Could not load sign me up config');
 		}
-		$this->Email->delivery = 'mail';
-		$this->Email->from = Configure::read('SignMeUp.from_email');
-		if (Configure::read('SignMeUp.email_layout')) {
-			$this->Email->layout = Configure::read('SignMeUp.email_layout');
+
+		if (Configure::read('SignMeUp')) {
+			$email_settings = Configure::read('SignMeUp');
+			foreach ($email_settings as $key => $setting) {
+				$this->Email->{$key} = $setting;
+			}
 		}
-		$this->Email->sendAs = Configure::read('SignMeUp.type');
-		$this->Email->subject = str_replace('%username%', $user['username'], Configure::read('SignMeUp.subject'));
-		$this->Email->to = $user['username'].' <'.$user['email'].'>';
-		$this->Email->xMailer = Configure::read('SignMeUp.xMailer');
+
+		extract($this->settings);
+		preg_match_all('/%(\w+?)%/', $this->Email->subject, $matches);
+		foreach ($matches[1] as $match) {
+			if (!empty($user[$match])) {
+				$this->Email->subject = str_replace('%'.$match.'%', $user[$match], $this->Email->subject);
+			}
+		}
+
+		$this->Email->to = $user[$username_field].' <'.$user[$email_field].'>';
 		$this->controller->set(compact('user'));
 	}
 
@@ -64,19 +74,30 @@ class SignMeUpComponent extends Object {
 		}
 	}
 
+	private function __setTemplate($template) {
+		if (!file_exists(ELEMENTS.'email/'.$this->Email->sendAs.'/'.$template.'.ctp')) {
+			$this->log('SignMeUp Error "Template Not Found": '.ELEMENTS.'email/'.$this->Email->sendAs.'/'.$template.'.ctp');
+		} else {
+			$this->Email->template = $template;
+			return true;
+		}
+	}
+
 	protected function __sendActivationEmail($userData) {
 		$this->__setUpEmailParams($userData);
-		$this->Email->template = Configure::read('SignMeUp.activation_template');
-		if ($this->Email->send()) {
-			return true;
+		if ($this->__setTemplate(Configure::read('SignMeUp.activation_template'))) {
+			if ($this->Email->send()) {
+				return true;
+			}
 		}
 	}
 
 	protected function __sendWelcomeEmail($userData) {
 		$this->__setUpEmailParams($userData);
-		$this->Email->template = Configure::read('SignMeUp.welcome_template');
-		if ($this->Email->send()) {
-			return true;
+		if ($this->__setTemplate(Configure::read('SignMeUp.welcome_template'))) {
+			if ($this->Email->send()) {
+				return true;
+			}
 		}
 	}
 
@@ -108,7 +129,7 @@ class SignMeUpComponent extends Object {
 					}
 					$data[$model][$activation_field] = null;
 					if ($this->controller->{$model}->save($data)) {
-						$this->Session->setFlash('Thank you '.$inactive_user[$model]['username'].', your account is now active');
+						$this->Session->setFlash('Thank you '.$inactive_user[$model][$username_field].', your account is now active');
 						$this->controller->redirect($this->Auth->loginAction);
 					}
 				} else {
@@ -119,5 +140,3 @@ class SignMeUpComponent extends Object {
 	}
 
 }
-
-?>
