@@ -11,14 +11,10 @@ class SignMeUpComponent extends Object {
 	public $name = 'SignMeUp';
 	public $uses = array('SignMeUp');
 
-	function initialize(&$controller, $settings = array()) {
+	public function initialize(&$controller, $settings = array()) {
 		$this->settings = array_merge($this->defaults, $settings);
 		$this->controller = &$controller;
-		if ($this->Auth->user()) {
-			$this->controller->redirect($this->Auth->loginRedirect);
-		} else {
-			$this->Auth->allow('register', 'activate');
-		}
+		$this->Auth->allow('register', 'activate');
 	}
 
 	private function __setUpEmailParams($user) {
@@ -38,6 +34,7 @@ class SignMeUpComponent extends Object {
 	}
 
 	public function register() {
+		$this->__isLoggedIn();
 		if (!empty($this->controller->data)) {
 			extract($this->settings);
 			$model = $this->controller->modelClass;
@@ -61,6 +58,12 @@ class SignMeUpComponent extends Object {
 		}
 	}
 
+	private function __isLoggedIn() {
+		if ($this->Auth->user()) {
+			$this->controller->redirect($this->Auth->loginRedirect);
+		}
+	}
+
 	protected function __sendActivationEmail($userData) {
 		$this->__setUpEmailParams($userData);
 		$this->Email->template = Configure::read('SignMeUp.activation_template');
@@ -78,6 +81,7 @@ class SignMeUpComponent extends Object {
 	}
 
 	public function activate() {
+		$this->__isLoggedIn();
 		extract($this->settings);
 		//If there is no activation field specified, don't bother with activation
 		if (!empty($activation_field)) {
