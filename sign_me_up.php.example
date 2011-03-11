@@ -3,7 +3,7 @@
 $config['SignMeUp'] = array(
 	'from' => 'ExampleDomain.com <admin@exampledomain.com>',
 	'layout' => 'default',
-	'subject' => 'Welcome to ExampleDomain.com %username% %email%',
+	'subject' => 'Welcome to ExampleDomain.com %username% using email address %email%',
 	'sendAs' => 'text',
 	'activation_template' => 'activate',
 	'welcome_template' => 'welcome',

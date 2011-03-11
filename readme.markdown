@@ -37,20 +37,21 @@ app/views/users/register.ctp
 app/views/users/activate.ctp
 	<?php echo $this->element('activate', array('plugin' => 'SignMeUp')); ?>
 
-Next up the plugin requires that you have a config file in 'app/config/sign_me_up.php', examples of what can be changed are:
+Next up the plugin requires that you have a config file in 'app/config/sign_me_up.php'. SignMeUp configuration allows you to overwrite all default CakePHP email parameters by simply specifying the elements in the SignMeUp configuration array i.e change email sending to HTML format via setting the sendAs to HTML or change the email layout with 'layout' => 'myLayout'. The only thing that you would need to diverge from the Email Component settings with is the welcome and activate templates. You can set them with welcome_template and activation_template elements:
 
 	<?php
 
 	$config['SignMeUp'] = array(
-		'from_email' => 'Mydomain.com <admin@mydomain.com>',
-		'email_layout' => 'default',
-		'subject' => 'Welcome to Mydomain.com %username%',
-		'template' => 'welcome',
-		'type' => 'text',
-		'xMailer' => 'Mydomain.com Email',
+		'from' => 'ExampleDomain.com <admin@exampledomain.com>',
+		'layout' => 'default',
+		'subject' => 'Welcome to ExampleDomain.com %username% using email address %email%',
+		'sendAs' => 'text',
+		'activation_template' => 'activate',
+		'welcome_template' => 'welcome',
+		'xMailer' => 'ExampleDomain.com Email',
 	);
 
-Apart from that the only other things required is that you set up the email layout & views, examples being:
+Also note you can include fields in the subject line from your user model. Simply specify the field name you want placed in the subject line with %field_name%. Apart from that the only other things required is that you set up the email layout & views, examples being:
 
 app/views/layouts/email/text/default.ctp
 	<?php echo $content_for_layout; ?>
