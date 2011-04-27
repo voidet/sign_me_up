@@ -6,8 +6,10 @@ class SignMeUpComponent extends Object {
 	public $defaults = array(
 		'activation_field' => 'activation_code',
 		'useractive_field' => 'active',
+		'password_reset_field' => 'password_reset',
 		'username_field' => 'username',
 		'email_field' => 'email',
+		'password_field' => 'password',
 	);
 	public $helpers = array('Form', 'Html');
 	public $name = 'SignMeUp';
@@ -16,7 +18,6 @@ class SignMeUpComponent extends Object {
 	public function initialize(&$controller, $settings = array()) {
 		$this->settings = array_merge($this->defaults, $settings);
 		$this->controller = &$controller;
-		$this->Auth->allow('register', 'activate');
 	}
 
 	private function __setUpEmailParams($user) {
@@ -86,6 +87,7 @@ class SignMeUpComponent extends Object {
 	protected function __sendActivationEmail($userData) {
 		$this->__setUpEmailParams($userData);
 		if ($this->__setTemplate(Configure::read('SignMeUp.activation_template'))) {
+			$this->Email->subject = $this->Email->welcome_subject;
 			if ($this->Email->send()) {
 				return true;
 			}
@@ -95,6 +97,7 @@ class SignMeUpComponent extends Object {
 	protected function __sendWelcomeEmail($userData) {
 		$this->__setUpEmailParams($userData);
 		if ($this->__setTemplate(Configure::read('SignMeUp.welcome_template'))) {
+			$this->Email->subject = $this->Email->welcome_subject;
 			if ($this->Email->send()) {
 				return true;
 			}
@@ -135,6 +138,76 @@ class SignMeUpComponent extends Object {
 				} else {
 					$this->Session->setFlash('Sorry, that code is incorrect.');
 				}
+			}
+		}
+	}
+
+	public function forgottenPassword() {
+		extract($this->settings);
+		$model = $this->controller->modelClass;
+		if (!empty($this->controller->data[$model])) {
+			$data = $this->controller->data[$model];
+		}
+
+		//User has code to reset their password
+		if (!empty($this->controller->params[$password_reset_field])) {
+			$this->__generateNewPassword($model);
+		} elseif (!empty($password_reset_field) && !empty($data['email'])) {
+			$this->__requestNewPassword($data, $model);
+		}
+	}
+
+	private function __generateNewPassword($model = '') {
+		extract($this->settings);
+		$user = $this->controller->{$model}->find('first', array(
+			'conditions' => array($password_reset_field => $this->controller->params[$password_reset_field]),
+			'recursive' => -1
+		));
+
+		if (!empty($user)) {
+			$password = substr(Security::hash(String::uuid(), null, true), 0, 8);
+			$user[$model][$password_field] = Security::hash($password, null, true);
+			$user[$model][$password_reset_field] = null;
+			$this->controller->set(compact('password'));
+			if ($this->controller->{$model}->save($user) && $this->__sendNewPassword($user[$model])) {
+				$this->Session->setFlash('Thank you '.$user[$model][$username_field].', your new password has been emailed to you.');
+				$this->controller->redirect($this->Auth->loginAction);
+			}
+		}
+	}
+
+	private function __sendNewPassword($user = array()) {
+		$this->__setUpEmailParams($user);
+		if ($this->__setTemplate(Configure::read('SignMeUp.new_password_template'))) {
+			$this->Email->subject = $this->Email->new_password_subject;
+			if ($this->Email->send()) {
+				return true;
+			}
+		}
+	}
+
+	private function __requestNewPassword($data = array(), $model = '') {
+		extract($this->settings);
+		$this->controller->loadModel($model);
+		$user = $this->controller->{$model}->find('first', array('conditions' => array('email' => $data['email']), 'recursive' => -1));
+		if (!empty($user)) {
+			$user[$model][$password_reset_field] = md5(String::uuid());
+
+			if ($this->controller->{$model}->save($user) && $this->__sendForgottenPassword($user[$model])) {
+				$this->Session->setFlash('Thank you. A password recovery email has now been sent to '.$data['email']);
+				$this->controller->redirect($this->Auth->loginAction);
+			}
+		} else {
+			$this->controller->{$model}->invalidate('email', 'No user found with email: '.$data['email']);
+		}
+	}
+
+	private function __sendForgottenPassword($user = array()) {
+		$this->__setUpEmailParams($user);
+		if ($this->__setTemplate(Configure::read('SignMeUp.password_reset_template'))) {
+			$this->Email->subject = $this->Email->password_reset_subject;
+			if ($this->Email->send()) {
+				return true;
 			}
 		}
 	}

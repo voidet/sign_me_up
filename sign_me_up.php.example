@@ -6,6 +6,7 @@ $config['SignMeUp'] = array(
 	'subject' => 'Welcome to ExampleDomain.com %username% using email address %email%',
 	'sendAs' => 'text',
 	'activation_template' => 'activate',
+	'password_reset_template' => 'forgotten_password',
 	'welcome_template' => 'welcome',
 	'xMailer' => 'ExampleDomain.com Email',
 );
