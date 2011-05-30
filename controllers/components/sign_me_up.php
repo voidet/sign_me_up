@@ -6,10 +6,18 @@ class SignMeUpComponent extends Object {
 	public $defaults = array(
 		'activation_field' => 'activation_code',
 		'useractive_field' => 'active',
+		'welcome_subject' => 'Welcome',
+		'activation_subject' => 'Please Activate Your Account',
 		'password_reset_field' => 'password_reset',
 		'username_field' => 'username',
 		'email_field' => 'email',
 		'password_field' => 'password',
+		'activation_template' => 'activate',
+		'welcome_template' => 'welcome',
+		'password_reset_template' => 'forgotten_password',
+		'password_reset_subject' => 'Password Reset Request',
+		'new_password_template' => 'recovered_password',
+		'new_password_subject' => 'Your new Password',
 	);
 	public $helpers = array('Form', 'Html');
 	public $name = 'SignMeUp';
@@ -33,15 +41,18 @@ class SignMeUpComponent extends Object {
 		}
 
 		extract($this->settings);
-		preg_match_all('/%(\w+?)%/', $this->Email->subject, $matches);
-		foreach ($matches[1] as $match) {
-			if (!empty($user[$match])) {
-				$this->Email->subject = str_replace('%'.$match.'%', $user[$match], $this->Email->subject);
-			}
-		}
-
 		$this->Email->to = $user[$username_field].' <'.$user[$email_field].'>';
 		$this->controller->set(compact('user'));
+	}
+
+	private function __parseEmailSubject($action = '', $user = array()) {
+		$subject = $this->Email->{$action.'_subject'};
+		preg_match_all('/%(\w+?)%/', $subject, $matches);
+		foreach ($matches[1] as $match) {
+			if (!empty($user[$match])) {
+				$this->Email->subject = str_replace('%'.$match.'%', $user[$match], $subject);
+			}
+		}
 	}
 
 	public function register() {
@@ -86,8 +97,8 @@ class SignMeUpComponent extends Object {
 
 	protected function __sendActivationEmail($userData) {
 		$this->__setUpEmailParams($userData);
+		$this->__parseEmailSubject('activation', $userData);
 		if ($this->__setTemplate(Configure::read('SignMeUp.activation_template'))) {
-			$this->Email->subject = $this->Email->welcome_subject;
 			if ($this->Email->send()) {
 				return true;
 			}
@@ -96,8 +107,8 @@ class SignMeUpComponent extends Object {
 
 	protected function __sendWelcomeEmail($userData) {
 		$this->__setUpEmailParams($userData);
+		$this->__parseEmailSubject('welcome', $userData);
 		if ($this->__setTemplate(Configure::read('SignMeUp.welcome_template'))) {
-			$this->Email->subject = $this->Email->welcome_subject;
 			if ($this->Email->send()) {
 				return true;
 			}
@@ -132,6 +143,7 @@ class SignMeUpComponent extends Object {
 					}
 					$data[$model][$activation_field] = null;
 					if ($this->controller->{$model}->save($data)) {
+						$this->__sendWelcomeEmail($inactive_user['User']);
 						$this->Session->setFlash('Thank you '.$inactive_user[$model][$username_field].', your account is now active');
 						$this->controller->redirect($this->Auth->loginAction);
 					}
