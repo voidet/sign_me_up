@@ -2,7 +2,7 @@
 
 class SignMeUpComponent extends Object {
 
-	public $components = array('Session', 'Email', 'Auth');
+	public $components = array('Session', 'Email', 'Auth', 'RequestHandler');
 	public $defaults = array(
 		'activation_field' => 'activation_code',
 		'useractive_field' => 'active',
@@ -70,11 +70,15 @@ class SignMeUpComponent extends Object {
 					//If an activation field is supplied send out an email
 					if (!empty($activation_field)) {
 						$this->__sendActivationEmail($this->controller->data[$model]);
-						$this->controller->redirect(array('action' => 'activate'));
+						if (!$this->RequestHandler->isAjax()) {
+							$this->controller->redirect(array('action' => 'activate'));
+						}
 					} else {
 						$this->__sendWelcomeEmail($this->controller->data[$model]);
 					}
-					$this->controller->redirect($this->Auth->loginAction);
+					if (!$this->RequestHandler->isAjax()) {
+						$this->controller->redirect($this->Auth->loginAction);
+					}
 				}
 			}
 		}
@@ -82,7 +86,9 @@ class SignMeUpComponent extends Object {
 
 	private function __isLoggedIn() {
 		if ($this->Auth->user()) {
-			$this->controller->redirect($this->Auth->loginRedirect);
+			if (!$this->RequestHandler->isAjax()) {
+				$this->controller->redirect($this->Auth->loginRedirect);
+			}
 		}
 	}
 
@@ -144,8 +150,10 @@ class SignMeUpComponent extends Object {
 					$data[$model][$activation_field] = null;
 					if ($this->controller->{$model}->save($data)) {
 						$this->__sendWelcomeEmail($inactive_user['User']);
-						$this->Session->setFlash('Thank you '.$inactive_user[$model][$username_field].', your account is now active');
-						$this->controller->redirect($this->Auth->loginAction);
+						if (!$this->RequestHandler->isAjax()) {
+							$this->Session->setFlash('Thank you '.$inactive_user[$model][$username_field].', your account is now active');
+							$this->controller->redirect($this->Auth->loginAction);
+						}
 					}
 				} else {
 					$this->Session->setFlash('Sorry, that code is incorrect.');
@@ -182,8 +190,10 @@ class SignMeUpComponent extends Object {
 			$user[$model][$password_reset_field] = null;
 			$this->controller->set(compact('password'));
 			if ($this->controller->{$model}->save($user) && $this->__sendNewPassword($user[$model])) {
-				$this->Session->setFlash('Thank you '.$user[$model][$username_field].', your new password has been emailed to you.');
-				$this->controller->redirect($this->Auth->loginAction);
+				if (!$this->RequestHandler->isAjax()) {
+					$this->Session->setFlash('Thank you '.$user[$model][$username_field].', your new password has been emailed to you.');
+					$this->controller->redirect($this->Auth->loginAction);
+				}
 			}
 		}
 	}
@@ -206,8 +216,10 @@ class SignMeUpComponent extends Object {
 			$user[$model][$password_reset_field] = md5(String::uuid());
 
 			if ($this->controller->{$model}->save($user) && $this->__sendForgottenPassword($user[$model])) {
-				$this->Session->setFlash('Thank you. A password recovery email has now been sent to '.$data['email']);
-				$this->controller->redirect($this->Auth->loginAction);
+				if (!$this->RequestHandler->isAjax()) {
+					$this->Session->setFlash('Thank you. A password recovery email has now been sent to '.$data['email']);
+					$this->controller->redirect($this->Auth->loginAction);
+				}
 			}
 		} else {
 			$this->controller->{$model}->invalidate('email', 'No user found with email: '.$data['email']);
