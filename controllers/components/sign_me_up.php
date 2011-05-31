@@ -72,12 +72,16 @@ class SignMeUpComponent extends Object {
 						$this->__sendActivationEmail($this->controller->data[$model]);
 						if (!$this->RequestHandler->isAjax()) {
 							$this->controller->redirect(array('action' => 'activate'));
+						} else {
+							return true;
 						}
 					} else {
 						$this->__sendWelcomeEmail($this->controller->data[$model]);
 					}
 					if (!$this->RequestHandler->isAjax()) {
 						$this->controller->redirect($this->Auth->loginAction);
+					} else {
+						return true;
 					}
 				}
 			}
@@ -153,6 +157,8 @@ class SignMeUpComponent extends Object {
 						if (!$this->RequestHandler->isAjax()) {
 							$this->Session->setFlash('Thank you '.$inactive_user[$model][$username_field].', your account is now active');
 							$this->controller->redirect($this->Auth->loginAction);
+						} else {
+							return true;
 						}
 					}
 				} else {
@@ -193,6 +199,8 @@ class SignMeUpComponent extends Object {
 				if (!$this->RequestHandler->isAjax()) {
 					$this->Session->setFlash('Thank you '.$user[$model][$username_field].', your new password has been emailed to you.');
 					$this->controller->redirect($this->Auth->loginAction);
+				} else {
+					return true;
 				}
 			}
 		}
@@ -219,6 +227,8 @@ class SignMeUpComponent extends Object {
 				if (!$this->RequestHandler->isAjax()) {
 					$this->Session->setFlash('Thank you. A password recovery email has now been sent to '.$data['email']);
 					$this->controller->redirect($this->Auth->loginAction);
+				} else {
+					return true;
 				}
 			}
 		} else {
