@@ -65,6 +65,8 @@ class SignMeUpComponent extends Object {
 			if ($this->controller->{$model}->validates()) {
 				if (!empty($activation_field)) {
 					$this->controller->data[$model][$activation_field] = $this->controller->{$model}->generateActivationCode($this->controller->data);
+				} elseif (!empty($useractive_field)) {
+					$this->controller->data[$model][$useractive_field] = true;
 				}
 				if ($this->controller->{$model}->save($this->controller->data, false)) {
 					//If an activation field is supplied send out an email
