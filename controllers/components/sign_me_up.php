@@ -24,6 +24,11 @@ class SignMeUpComponent extends Object {
 	public $uses = array('SignMeUp');
 
 	public function initialize(&$controller, $settings = array()) {
+		//Load config file if not used inline in controller
+		if (empty($settings)) {
+			Configure::load('sign_me_up');
+			$settings = Configure::read('SignMeUp');
+		}
 		$this->settings = array_merge($this->defaults, $settings);
 		$this->controller = &$controller;
 	}
