@@ -59,7 +59,7 @@ Next up the plugin requires that you have a config file in 'app/config/sign_me_u
 	$config['SignMeUp'] = array(
 		'from' => 'ExampleDomain.com <admin@exampledomain.com>',
 		'layout' => 'default',
-		'subject' => 'Welcome to ExampleDomain.com %username% using email address %email%',
+		'welcome_subject' => 'Welcome to ExampleDomain.com %username% using email address %email%',
 		'sendAs' => 'text',
 		'activation_template' => 'activate',
 		'welcome_template' => 'welcome',
