@@ -24,18 +24,26 @@ class SignMeUpComponent extends Object {
 	public $uses = array('SignMeUp');
 
 	public function initialize(&$controller, $settings = array()) {
+		$this->__loadConfig();
+		if (!is_array($settings)) {
+			die('Supplied inline config is not an array');
+		}
+		$settings = array_merge($settings, Configure::read('SignMeUp'));
 		$this->settings = array_merge($this->defaults, $settings);
 		$this->controller = &$controller;
 	}
 
-	private function __setUpEmailParams($user) {
-		if (Configure::load('sign_me_up') === false) {
-			die ('Could not load sign me up config');
+	private function __loadConfig() {
+		if (Configure::load('SignMeUp.sign_me_up') === false) {
+			die('Could not load sign me up config');
 		}
+	}
+
+	private function __setUpEmailParams($user) {
+		$this->__loadConfig();
 
 		if (Configure::read('SignMeUp')) {
-			$email_settings = Configure::read('SignMeUp');
-			foreach ($email_settings as $key => $setting) {
+			foreach ($this->settings as $key => $setting) {
 				$this->Email->{$key} = $setting;
 			}
 		}
