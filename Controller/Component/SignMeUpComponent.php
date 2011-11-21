@@ -79,6 +79,11 @@ class SignMeUpComponent extends Component {
 			$model = $this->controller->modelClass;
 			$this->controller->loadModel($model);
 			$this->controller->{$model}->set($this->data);
+
+			if (CakePlugin::loaded('Mongodb')) {
+				$this->controller->{$model}->Behaviors->attach('Mongodb.SqlCompatible');
+			}
+
 			if ($this->controller->{$model}->validates()) {
 				if (!empty($activation_field)) {
 					$this->data[$model][$activation_field] = $this->controller->{$model}->generateActivationCode($this->data);
