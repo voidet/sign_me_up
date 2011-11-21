@@ -54,7 +54,11 @@ class SignMeUpComponent extends Component {
 		}
 
 		extract($this->settings);
-		$this->Email->to = $user[$username_field].' <'.$user[$email_field].'>';
+		if (empty($user[$username_field])) {
+			$this->Email->to = $user[$email_field].' <'.$user[$email_field].'>';
+		} else {
+			$this->Email->to = $user[$username_field].' <'.$user[$email_field].'>';
+		}
 		$this->controller->set(compact('user'));
 	}
 
