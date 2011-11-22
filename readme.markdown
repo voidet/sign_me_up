@@ -42,13 +42,13 @@ Next up create the register, activate & forgotten password methods in your contr
 Sign Me Up also comes with 3 elements for your views, which don't have to be used. However in your views feel free to use the elements to create the Registration, Activation and Forgotten Password forms as:
 
 	app/views/users/register.ctp
-		<?php echo $this->element('register', array('plugin' => 'SignMeUp')); ?>
+		<?php echo $this->element('register', array(), array('plugin' => 'SignMeUp')); ?>
 
 	app/views/users/activate.ctp
-		<?php echo $this->element('activate', array('plugin' => 'SignMeUp')); ?>
+		<?php echo $this->element('activate', array(), array('plugin' => 'SignMeUp')); ?>
 
 	app/views/users/forgotten_password_.ctp
-		<?php echo $this->element('forgotten_password', array('plugin' => 'SignMeUp')); ?>
+		<?php echo $this->element('forgotten_password', array(), array('plugin' => 'SignMeUp')); ?>
 
 Currently Forgotten Passwords are based on the user's email address entered into the form. If there is any request for this to be based on another field I will review.
 
