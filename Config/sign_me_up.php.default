@@ -8,6 +8,7 @@ $config['SignMeUp'] = array(
 	'sendAs' => 'html',
 	'activation_template' => 'activate',
 	'welcome_template' => 'welcome',
+	'password_reset_field' => 'password_reset',
 	'password_reset_template' => 'forgotten_password',
 	'password_reset_subject' => 'Password reset from MyDomain.com',
 	'new_password_template' => 'new_password',

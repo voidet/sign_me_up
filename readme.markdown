@@ -57,10 +57,11 @@ Next up the plugin requires that you have a config file in 'app/config/sign_me_u
 	<?php
 
 	$config['SignMeUp'] = array(
-		'from' => 'ExampleDomain.com <admin@exampledomain.com>',
+		'from' => 'MyDomain.com <admin@exampledomain.com>',
 		'layout' => 'default',
-		'welcome_subject' => 'Welcome to ExampleDomain.com %username% using email address %email%',
-		'sendAs' => 'text',
+		'welcome_subject' => 'Welcome to MyDomain.com %username%!',
+		'activation_subject' => 'Activate Your MyDomain.com Account %username%!',
+		'sendAs' => 'html',
 		'activation_template' => 'activate',
 		'welcome_template' => 'welcome',
 		'password_reset_field' => 'password_reset',
@@ -68,7 +69,7 @@ Next up the plugin requires that you have a config file in 'app/config/sign_me_u
 		'password_reset_subject' => 'Password reset from MyDomain.com',
 		'new_password_template' => 'new_password',
 		'new_password_subject' => 'Your new password from MyDomain.com',
-		'xMailer' => 'ExampleDomain.com Email',
+		'xMailer' => 'MyDomain.com Email-bot',
 	);
 
 Also note you can include fields in the subject line from your user model. Simply specify the field name you want placed in the subject line with %field_name%. Apart from that the only other things required is that you set up the email layout & views, examples being:
