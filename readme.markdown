@@ -77,7 +77,7 @@ app/views/layouts/email/text/default.ctp
 
 	<?php echo $content_for_layout; ?>
 
-app/views/elements/email/text/welcome.ctp
+app/views/elements/email/text/activate.ctp
 
 	Welcome <?php echo $user['username']; ?>,
 
