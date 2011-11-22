@@ -178,7 +178,7 @@ class SignMeUpComponent extends Component {
 
 				$inactive_user = $this->controller->{$model}->find('first', array('conditions' => array($activation_field => $activation_code), 'recursive' => -1));
 				if (!empty($inactive_user)) {
-					$this->controller->{$model}->primaryKey = $inactive_user[$model][$this->controller->{$model}->primaryKey];
+					$this->controller->{$model}->id = $inactive_user[$model][$this->controller->{$model}->primaryKey];
 					if (!empty($useractive_field)) {
 						$data[$model][$useractive_field] = true;
 					}
