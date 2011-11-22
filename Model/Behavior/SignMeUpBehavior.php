@@ -24,14 +24,14 @@ class SignMeUpBehavior extends ModelBehavior {
 			),
 		),
 		'password1' => array(
+			'minRequirements' => array(
+				'rule' => array('minLength', 6),
+				'message' => 'Passwords need to be at least 6 characters long'
+			),
 			'match' => array(
 				'rule' => array('confirmPassword', 'password1', 'password2'),
 				'message' => 'Passwords do not match'
 			),
-			'minRequirements' => array(
-				'rule' => array('minLength', 6),
-				'message' => 'Passwords need to be at least 6 characters long'
-			)
 		),
 	);
 
