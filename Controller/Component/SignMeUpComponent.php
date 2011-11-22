@@ -19,7 +19,7 @@ class SignMeUpComponent extends Component {
 		'password_reset_template' => 'forgotten_password',
 		'password_reset_subject' => 'Password Reset Request',
 		'new_password_template' => 'recovered_password',
-		'new_password_subject' => 'Your new Password',
+		'new_password_subject' => 'Your new Password'
 	);
 	public $helpers = array('Form', 'Html');
 	public $name = 'SignMeUp';
@@ -65,10 +65,16 @@ class SignMeUpComponent extends Component {
 	private function __parseEmailSubject($action = '', $user = array()) {
 		$subject = $this->Email->{$action.'_subject'};
 		preg_match_all('/%(\w+?)%/', $subject, $matches);
+		$foundMatch = false;
 		foreach ($matches[1] as $match) {
 			if (!empty($user[$match])) {
+				$foundMatch = true;
 				$this->Email->subject = str_replace('%'.$match.'%', $user[$match], $subject);
 			}
+		}
+
+		if ($foundMatch === false) {
+			$this->Email->subject = $subject;
 		}
 	}
 
