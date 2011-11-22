@@ -90,6 +90,16 @@ app/views/elements/email/text/activate.ctp
 	Regards,
 	MyDomain.com Staff
 
+app/views/elements/email/text/welcome.ctp
+
+	Welcome <?php echo $user['username']; ?>,
+
+	Thanks for registering! See you inside :)
+
+	We look forward to seeing you!
+	Regards,
+	MyDomain.com Staff
+
 app/views/elements/email/text/forgotten_password.ctp
 
 	Hi <?php echo $user['username']; ?>,
