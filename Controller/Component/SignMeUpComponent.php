@@ -40,7 +40,7 @@ class SignMeUpComponent extends Component {
 	}
 
 	private function __loadConfig() {
-		if (Configure::load('SignMeUp.sign_me_up', 'default', false) === false) {
+		if (Configure::load('sign_me_up', 'default', false) === false) {
 			die('Could not load sign me up config');
 		}
 	}
