@@ -186,7 +186,11 @@ class SignMeUpComponent extends Component {
 					if ($this->controller->{$model}->save($data)) {
 						$this->__sendWelcomeEmail($inactive_user['User']);
 						if (!$this->controller->request->is('ajax')) {
-							$this->Session->setFlash('Thank you '.$inactive_user[$model][$username_field].', your account is now active');
+							$user = '';
+							if (!empty($inactive_user[$model][$username_field])) {
+								$user = ' '.$inactive_user[$model][$username_field];
+							}
+							$this->Session->setFlash('Thank you'.$user.', your account is now active');
 							$this->controller->redirect($this->Auth->loginAction);
 						} else {
 							return true;
