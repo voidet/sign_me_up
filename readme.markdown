@@ -13,7 +13,7 @@ Next up open up app/Config/bootstrap.php
 Uncomment/Add the line:
 
 CakePlugin::loadAll(); // Loads all plugins at once
--- Or --
+  Or 
 CakePlugin::load('SignMeUp'); //Loads a single plugin
 
 ##Attaching
