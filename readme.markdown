@@ -5,8 +5,18 @@ Sign Me Up is a CakePHP plugin that takes out 99% of the work needed to develop 
 ##Installation
 Install the plugin:
 
-	cd myapp/app/plugins/
+	cd myapp/app/Plugin/
 	git clone git@github.com:voidet/sign_me_up.git sign_me_up
+
+##Load the Plugin
+Next up open up app/Config/bootstrap.php
+Uncomment/Add the line:
+
+CakePlugin::loadAll(); // Loads all plugins at once
+-- Or --
+CakePlugin::load('SignMeUp'); //Loads a single plugin
+
+##Attaching
 
 To attach the plugin to a particular model (User/Member/Pimp) simply add in the plugin's component in your chosen controller & model:
 
@@ -19,7 +29,7 @@ To attach the plugin to a particular model (User/Member/Pimp) simply add in the 
 			parent::beforeFilter();
 		}
 
-And in the User model app/models/user.php
+And in the User model app/Model/User.php
 
 	class User extends AppModel {
 
@@ -41,26 +51,27 @@ Next up create the register, activate & forgotten password methods in your contr
 
 Sign Me Up also comes with 3 elements for your views, which don't have to be used. However in your views feel free to use the elements to create the Registration, Activation and Forgotten Password forms as:
 
-	app/views/users/register.ctp
-		<?php echo $this->element('register', array('plugin' => 'SignMeUp')); ?>
+	app/View/Users/register.ctp
+		<?php echo $this->element('register', array(), array('plugin' => 'SignMeUp')); ?>
 
-	app/views/users/activate.ctp
-		<?php echo $this->element('activate', array('plugin' => 'SignMeUp')); ?>
+	app/View/Users/activate.ctp
+		<?php echo $this->element('activate', array(), array('plugin' => 'SignMeUp')); ?>
 
-	app/views/users/forgotten_password_.ctp
-		<?php echo $this->element('forgotten_password', array('plugin' => 'SignMeUp')); ?>
+	app/View/Users/forgotten_password_.ctp
+		<?php echo $this->element('forgotten_password', array(), array('plugin' => 'SignMeUp')); ?>
 
 Currently Forgotten Passwords are based on the user's email address entered into the form. If there is any request for this to be based on another field I will review.
 
-Next up the plugin requires that you have a config file in 'app/config/sign_me_up.php'. SignMeUp configuration allows you to overwrite all default CakePHP email parameters by simply specifying the elements in the SignMeUp configuration array i.e change email sending to HTML format via setting the sendAs to HTML or change the email layout with 'layout' => 'myLayout'. The only thing that you would need to diverge from the Email Component settings with is the welcome and activate templates. You can set them with welcome_template and activation_template elements:
+Next up the plugin requires that you have a config file in 'app/Config/sign_me_up.php'. SignMeUp configuration allows you to overwrite all default CakePHP email parameters by simply specifying the elements in the SignMeUp configuration array i.e change email sending to HTML format via setting the sendAs to HTML or change the email layout with 'layout' => 'myLayout'. The only thing that you would need to diverge from the Email Component settings with is the welcome and activate templates. You can set them with welcome_template and activation_template elements:
 
 	<?php
 
 	$config['SignMeUp'] = array(
-		'from' => 'ExampleDomain.com <admin@exampledomain.com>',
+		'from' => 'MyDomain.com <admin@exampledomain.com>',
 		'layout' => 'default',
-		'welcome_subject' => 'Welcome to ExampleDomain.com %username% using email address %email%',
-		'sendAs' => 'text',
+		'welcome_subject' => 'Welcome to MyDomain.com %username%!',
+		'activation_subject' => 'Activate Your MyDomain.com Account %username%!',
+		'sendAs' => 'html',
 		'activation_template' => 'activate',
 		'welcome_template' => 'welcome',
 		'password_reset_field' => 'password_reset',
@@ -68,7 +79,7 @@ Next up the plugin requires that you have a config file in 'app/config/sign_me_u
 		'password_reset_subject' => 'Password reset from MyDomain.com',
 		'new_password_template' => 'new_password',
 		'new_password_subject' => 'Your new password from MyDomain.com',
-		'xMailer' => 'ExampleDomain.com Email',
+		'xMailer' => 'MyDomain.com Email-bot',
 	);
 
 Also note you can include fields in the subject line from your user model. Simply specify the field name you want placed in the subject line with %field_name%. Apart from that the only other things required is that you set up the email layout & views, examples being:
@@ -77,13 +88,23 @@ app/views/layouts/email/text/default.ctp
 
 	<?php echo $content_for_layout; ?>
 
-app/views/elements/email/text/welcome.ctp
+app/views/elements/email/text/activate.ctp
 
 	Welcome <?php echo $user['username']; ?>,
 
 	In order to get started please click on the following link to activate your account:
 
 	<?php echo Router::url(array('action' => 'activate', 'activation_code' => $user['activation_code']), true)."\n"; ?>
+
+	We look forward to seeing you!
+	Regards,
+	MyDomain.com Staff
+
+app/views/elements/email/text/welcome.ctp
+
+	Welcome <?php echo $user['username']; ?>,
+
+	Thanks for registering! See you inside :)
 
 	We look forward to seeing you!
 	Regards,
