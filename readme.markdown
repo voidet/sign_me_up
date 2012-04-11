@@ -12,9 +12,9 @@ Install the plugin:
 Next up open up app/Config/bootstrap.php
 Uncomment/Add the line:
 
-CakePlugin::loadAll(); // Loads all plugins at once
-  Or 
-CakePlugin::load('SignMeUp'); //Loads a single plugin
+	CakePlugin::loadAll(); // Loads all plugins at once
+		Or 
+	CakePlugin::load('SignMeUp'); //Loads a single plugin
 
 ##Attaching
 
