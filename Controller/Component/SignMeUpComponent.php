@@ -186,7 +186,7 @@ class SignMeUpComponent extends Component {
 					$data[$model][$activation_field] = null;
 					if ($this->controller->{$model}->save($data)) {
 						$this->__sendWelcomeEmail($inactive_user['User']);
-						if ($login_after_activation) {
+						if ($login_after_activation === true) {
 							$this->Auth->login($inactive_user);
 						}
 						if (!$this->controller->request->is('ajax')) {
@@ -195,7 +195,7 @@ class SignMeUpComponent extends Component {
 								$user = ' '.$inactive_user[$model][$username_field];
 							}
 							$this->Session->setFlash('Thank you'.$user.', your account is now active');
-							if ($login_after_activation) {
+							if ($login_after_activation === true) {
 								$this->controller->redirect($this->Auth->loginRedirect);
 							} else {
 								$this->controller->redirect($this->Auth->loginAction);
