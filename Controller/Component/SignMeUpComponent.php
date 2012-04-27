@@ -163,8 +163,8 @@ class SignMeUpComponent extends Component {
 		if (!empty($activation_field)) {
 
 			//Test for an activation code in the parameters
-			if (!empty($this->controller->params[$activation_field])) {
-				$activation_code = $this->controller->params[$activation_field];
+			if (!empty($this->controller->params['named'][$activation_field])) {
+				$activation_code = $this->controller->params['named'][$activation_field];
 			}
 
 			//If there is an activation code supplied, either in _POST or _GET
@@ -211,7 +211,7 @@ class SignMeUpComponent extends Component {
 		}
 
 		//User has code to reset their password
-		if (!empty($this->controller->params[$password_reset_field])) {
+		if (!empty($this->controller->params['named'][$password_reset_field])) {
 			$this->__generateNewPassword($model);
 		} elseif (!empty($password_reset_field) && !empty($data['email'])) {
 			$this->__requestNewPassword($data, $model);
@@ -221,7 +221,7 @@ class SignMeUpComponent extends Component {
 	private function __generateNewPassword($model = '') {
 		extract($this->settings);
 		$user = $this->controller->{$model}->find('first', array(
-			'conditions' => array($password_reset_field => $this->controller->params[$password_reset_field]),
+			'conditions' => array($password_reset_field => $this->controller->params['named'][$password_reset_field]),
 			'recursive' => -1
 		));
 
