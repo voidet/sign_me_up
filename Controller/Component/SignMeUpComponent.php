@@ -8,6 +8,7 @@ class SignMeUpComponent extends Component {
 	public $defaults = array(
 		'activation_field' => 'activation_code',
 		'useractive_field' => 'active',
+		'login_after_activation' => false,
 		'welcome_subject' => 'Welcome',
 		'activation_subject' => 'Please Activate Your Account',
 		'password_reset_field' => 'password_reset',
@@ -163,8 +164,8 @@ class SignMeUpComponent extends Component {
 		if (!empty($activation_field)) {
 
 			//Test for an activation code in the parameters
-			if (!empty($this->controller->params[$activation_field])) {
-				$activation_code = $this->controller->params[$activation_field];
+			if (!empty($this->controller->params['named'][$activation_field])) {
+				$activation_code = $this->controller->params['named'][$activation_field];
 			}
 
 			//If there is an activation code supplied, either in _POST or _GET
@@ -185,13 +186,20 @@ class SignMeUpComponent extends Component {
 					$data[$model][$activation_field] = null;
 					if ($this->controller->{$model}->save($data)) {
 						$this->__sendWelcomeEmail($inactive_user['User']);
+						if ($login_after_activation) {
+							$this->Auth->login($inactive_user);
+						}
 						if (!$this->controller->request->is('ajax')) {
 							$user = '';
 							if (!empty($inactive_user[$model][$username_field])) {
 								$user = ' '.$inactive_user[$model][$username_field];
 							}
 							$this->Session->setFlash('Thank you'.$user.', your account is now active');
-							$this->controller->redirect($this->Auth->loginAction);
+							if ($login_after_activation) {
+								$this->controller->redirect($this->Auth->loginRedirect);
+							} else {
+								$this->controller->redirect($this->Auth->loginAction);
+							}
 						} else {
 							return true;
 						}
@@ -211,7 +219,7 @@ class SignMeUpComponent extends Component {
 		}
 
 		//User has code to reset their password
-		if (!empty($this->controller->params[$password_reset_field])) {
+		if (!empty($this->controller->params['named'][$password_reset_field])) {
 			$this->__generateNewPassword($model);
 		} elseif (!empty($password_reset_field) && !empty($data['email'])) {
 			$this->__requestNewPassword($data, $model);
@@ -221,7 +229,7 @@ class SignMeUpComponent extends Component {
 	private function __generateNewPassword($model = '') {
 		extract($this->settings);
 		$user = $this->controller->{$model}->find('first', array(
-			'conditions' => array($password_reset_field => $this->controller->params[$password_reset_field]),
+			'conditions' => array($password_reset_field => $this->controller->params['named'][$password_reset_field]),
 			'recursive' => -1
 		));
 
