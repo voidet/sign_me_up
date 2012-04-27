@@ -5,7 +5,7 @@ App::uses('CakeEmail', 'Network/Email');
 
 class SignMeUpComponent extends Component {
 
-	public $components = array('Session', 'Email', 'Auth', 'RequestHandler');
+	public $components = array('Session', 'Auth', 'RequestHandler');
 	public $defaults = array(
 		'activation_field' => 'activation_code',
 		'useractive_field' => 'active',
@@ -15,7 +15,8 @@ class SignMeUpComponent extends Component {
 		'password_reset_field' => 'password_reset',
 		'username_field' => 'username',
 		'email_field' => 'email',
-		'password_field' => 'password',
+		'email_layout' => 'default',
+ 		'password_field' => 'password',
 		'activation_template' => 'activate',
 		'welcome_template' => 'welcome',
 		'password_reset_template' => 'forgotten_password',
@@ -37,6 +38,7 @@ class SignMeUpComponent extends Component {
 		$settings = array_merge($this->settings, Configure::read('SignMeUp'));
 		$this->settings = array_merge($this->defaults, $settings);
 		$this->requestHandler = new CakeRequest();
+		$this->signMeUpEmailer = new CakeEmail('signMeUp');
 		$this->data = $this->requestHandler->data(null);
 		$this->controller = $controller;
 	}
@@ -49,34 +51,28 @@ class SignMeUpComponent extends Component {
 
 	private function __setUpEmailParams($user) {
 		$this->__loadConfig();
-		if (Configure::read('SignMeUp')) {
-			foreach ($this->settings as $key => $setting) {
-				$this->Email->{$key} = $setting;
-			}
-		}
-
 		extract($this->settings);
 		if (empty($user[$username_field])) {
-			$this->Email->to = $user[$email_field].' <'.$user[$email_field].'>';
+			$this->signMeUpEmailer->to($user[$email_field], $user[$email_field]);
 		} else {
-			$this->Email->to = $user[$username_field].' <'.$user[$email_field].'>';
+			$this->signMeUpEmailer->to($user[$email_field], $user[$username_field]);
 		}
-		$this->controller->set(compact('user'));
+		$this->signMeUpEmailer->viewVars(compact('user'));
 	}
 
 	private function __parseEmailSubject($action = '', $user = array()) {
-		$subject = $this->Email->{$action.'_subject'};
+		$subject = $this->settings->{$action.'_subject'};
 		preg_match_all('/%(\w+?)%/', $subject, $matches);
 		$foundMatch = false;
 		foreach ($matches[1] as $match) {
 			if (!empty($user[$match])) {
 				$foundMatch = true;
-				$this->Email->subject = str_replace('%'.$match.'%', $user[$match], $subject);
+				$this->signMeUpEmailer->subject(str_replace('%'.$match.'%', $user[$match], $subject));
 			}
 		}
 
 		if ($foundMatch === false) {
-			$this->Email->subject = $subject;
+			$this->signMeUpEmailer->subject($subject);
 		}
 	}
 
@@ -94,9 +90,9 @@ class SignMeUpComponent extends Component {
 
 			if ($this->controller->{$model}->validates()) {
 				if (!empty($activation_field)) {
-					$this->data[$model][$activation_field] = $this->controller->{$model}->generateActivationCode($this->data);
+					$this->request->data[$model][$activation_field] = $this->controller->{$model}->generateActivationCode($this->data);
 				} elseif (!empty($useractive_field)) {
-					$this->data[$model][$useractive_field] = true;
+					$this->request->data[$model][$useractive_field] = true;
 				}
 
 				if ($this->controller->{$model}->save($this->data, false)) {
@@ -117,6 +113,9 @@ class SignMeUpComponent extends Component {
 						return true;
 					}
 				}
+			} else {
+				unset($this->controller->request->data[$model]['password1']);
+				unset($this->controller->request->data[$model]['password2']);
 			}
 		}
 	}
@@ -129,20 +128,11 @@ class SignMeUpComponent extends Component {
 		}
 	}
 
-	private function __setTemplate($template) {
-		if (!file_exists(APP.'View/Emails/'.$this->Email->sendAs.'/'.$template.'.ctp')) {
-			die('SignMeUp Error "Template Not Found": '.APP.'View/Emails/'.$this->Email->sendAs.'/'.$template.'.ctp');
-		} else {
-			$this->Email->template = $template;
-			return true;
-		}
-	}
-
 	protected function __sendActivationEmail($userData) {
 		$this->__setUpEmailParams($userData);
 		$this->__parseEmailSubject('activation', $userData);
-		if ($this->__setTemplate(Configure::read('SignMeUp.activation_template'))) {
-			if ($this->Email->send()) {
+		if ($this->signMeUpEmailer->template($this->settings['activation_template'], $this->settings['email_layout'])) {
+			if ($this->signMeUpEmailer->send()) {
 				return true;
 			}
 		}
@@ -151,8 +141,8 @@ class SignMeUpComponent extends Component {
 	protected function __sendWelcomeEmail($userData) {
 		$this->__setUpEmailParams($userData);
 		$this->__parseEmailSubject('welcome', $userData);
-		if ($this->__setTemplate(Configure::read('SignMeUp.welcome_template'))) {
-			if ($this->Email->send()) {
+		if ($this->signMeUpEmailer->template($this->settings['welcome_template'], $this->settings['email_layout'])) {
+			if ($this->signMeUpEmailer->send()) {
 				return true;
 			}
 		}
@@ -251,9 +241,9 @@ class SignMeUpComponent extends Component {
 
 	private function __sendNewPassword($user = array()) {
 		$this->__setUpEmailParams($user);
-		if ($this->__setTemplate(Configure::read('SignMeUp.new_password_template'))) {
-			$this->Email->subject = $this->Email->new_password_subject;
-			if ($this->Email->send()) {
+		if ($this->signMeUpEmailer->template($this->settings['new_password_template'], $this->settings['email_layout'])) {
+			$this->signMeUpEmailer->subject = $this->setting['new_password_subject'];
+			if ($this->signMeUpEmailer->send()) {
 				return true;
 			}
 		}
@@ -281,9 +271,9 @@ class SignMeUpComponent extends Component {
 
 	private function __sendForgottenPassword($user = array()) {
 		$this->__setUpEmailParams($user);
-		if ($this->__setTemplate(Configure::read('SignMeUp.password_reset_template'))) {
-			$this->Email->subject = $this->Email->password_reset_subject;
-			if ($this->Email->send()) {
+		if ($this->signMeUpEmailer->template($this->settings['password_reset_template'], $this->settings['email_layout'])) {
+			$this->signMeUpEmailer->subject = $this->settings['password_reset_subject'];
+			if ($this->signMeUpEmailer->send()) {
 				return true;
 			}
 		}
