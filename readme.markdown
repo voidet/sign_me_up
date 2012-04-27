@@ -57,19 +57,31 @@ Next up the plugin requires that you have a config file in 'app/Config/sign_me_u
 	<?php
 
 	$config['SignMeUp'] = array(
-		'from' => 'MyDomain.com <admin@exampledomain.com>',
-		'layout' => 'default',
-		'welcome_subject' => 'Welcome to MyDomain.com %username%!',
-		'activation_subject' => 'Activate Your MyDomain.com Account %username%!',
-		'sendAs' => 'html',
+		'activation_field' => 'activation_code',
+		'useractive_field' => 'active',
+		'login_after_activation' => false,
+		'welcome_subject' => 'Welcome',
+		'activation_subject' => 'Please Activate Your Account',
+		'password_reset_field' => 'password_reset',
+		'username_field' => 'username',
+		'email_field' => 'email',
+		'email_layout' => 'default',
+ 		'password_field' => 'password',
 		'activation_template' => 'activate',
 		'welcome_template' => 'welcome',
-		'password_reset_field' => 'password_reset',
 		'password_reset_template' => 'forgotten_password',
-		'password_reset_subject' => 'Password reset from MyDomain.com',
-		'new_password_template' => 'new_password',
-		'new_password_subject' => 'Your new password from MyDomain.com',
-		'xMailer' => 'MyDomain.com Email-bot',
+		'password_reset_subject' => 'Password Reset Request',
+		'new_password_template' => 'recovered_password',
+		'new_password_subject' => 'Your new Password'
+	);
+
+SignMeUp 2.0 uses CakeEmail, so you will need to add in your email settings into app/Config/email.php under the $signMeUp config:
+
+	public $signMeUp = array(
+		'transport' => 'Mail',
+		'from' => 'me@me.com',
+		//'charset' => 'utf-8',
+		//'headerCharset' => 'utf-8',
 	);
 
 Also note you can include fields in the subject line from your user model. Simply specify the field name you want placed in the subject line with %field_name%. Apart from that the only other things required is that you set up the email layout & views, examples being:
