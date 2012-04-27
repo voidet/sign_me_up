@@ -12,4 +12,5 @@ $config['SignMeUp'] = array(
 	'new_password_template' => 'new_password',
 	'new_password_subject' => 'Your new password from MyDomain.com',
 	'xMailer' => 'MyDomain.com Email-bot',
+	'login_after_activation' => false,
 );
