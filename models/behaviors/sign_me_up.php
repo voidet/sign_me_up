@@ -38,6 +38,7 @@ class SignMeUpBehavior extends ModelBehavior {
 	public function beforeValidate(&$Model) {
 		$this->model = $Model;
 		$this->model->validate = array_merge($this->validate, $this->model->validate);
+		return true;
 	}
 
 	public function confirmPassword($field, $password1, $password2) {
