@@ -144,6 +144,7 @@ In order to set up your users table for activation, registration, or forgotten p
 	Router::connect('/register', array('controller' => 'users', 'action' => 'register'));
 	Router::connect('/activate', array('controller' => 'users', 'action' => 'activate'));
 	Router::connect('/activate/:activation_code', array('controller' => 'users', 'action' => 'activate'), array('pass' => 'activation_code'));
+	Router::connect('/forgotten_password, array('controller' => 'users', 'action' => 'forgotten_password'));
 	Router::connect('/forgotten_password/:password_reset', array('controller' => 'users', 'action' => 'forgotten_password'), array('pass' => 'password_reset_code'));
 	Router::connect('/login', array('controller' => 'users', 'action' => 'login'));
 	Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'));

@@ -90,9 +90,9 @@ class SignMeUpComponent extends Component {
 
 			if ($this->controller->{$model}->validates()) {
 				if (!empty($activation_field)) {
-					$this->request->data[$model][$activation_field] = $this->controller->{$model}->generateActivationCode($this->data);
+					$this->data[$model][$activation_field] = $this->controller->{$model}->generateActivationCode($this->data);
 				} elseif (!empty($useractive_field)) {
-					$this->request->data[$model][$useractive_field] = true;
+					$this->data[$model][$useractive_field] = true;
 				}
 
 				if ($this->controller->{$model}->save($this->data, false)) {
@@ -225,9 +225,9 @@ class SignMeUpComponent extends Component {
 
 		if (!empty($user)) {
 			$password = substr(Security::hash(String::uuid(), null, true), 0, 8);
+			$this->signMeUpEmailer->viewVars(array('password' => $password));
 			$user[$model][$password_field] = Security::hash($password, null, true);
 			$user[$model][$password_reset_field] = null;
-			$this->controller->set(compact('password'));
 			if ($this->controller->{$model}->save($user) && $this->__sendNewPassword($user[$model])) {
 				if (!$this->controller->request->is('ajax')) {
 					$this->Session->setFlash('Thank you '.$user[$model][$username_field].', your new password has been emailed to you.');
