@@ -41,6 +41,7 @@ class SignMeUpComponent extends Component {
 		$this->signMeUpEmailer = new CakeEmail('signMeUp');
 		$this->data = $this->requestHandler->data(null);
 		$this->controller = $controller;
+		$this->request = $controller->request;
 	}
 
 	private function __loadConfig() {
