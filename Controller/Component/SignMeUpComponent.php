@@ -155,8 +155,8 @@ class SignMeUpComponent extends Component {
 		//If there is no activation field specified, don't bother with activation
 		if (!empty($activation_field)) {
 			//Test for an activation code in the parameters
-			if (!empty($this->controller->request->params[$activation_field])) {
-				$activation_code = $this->controller->request->params[$activation_field];
+			if (!empty($this->controller->passedArgs[$activation_field])) {
+				$activation_code = $this->controller->passedArgs[$activation_field];
 			}
 
 			//If there is an activation code supplied, either in _POST or _GET
