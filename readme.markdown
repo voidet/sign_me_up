@@ -8,6 +8,16 @@ Install the plugin:
 	cd myapp/app/Plugin/
 	git clone git@github.com:voidet/sign_me_up.git sign_me_up
 
+##Load the Plugin
+Next up open up app/Config/bootstrap.php
+Uncomment/Add the line:
+
+	CakePlugin::loadAll(); // Loads all plugins at once
+		Or 
+	CakePlugin::load('SignMeUp'); //Loads a single plugin
+
+##Attaching
+
 To attach the plugin to a particular model (User/Member/Pimp) simply add in the plugin's component in your chosen controller & model:
 
 	class UsersController extends AppController {
@@ -67,6 +77,11 @@ Next up the plugin requires that you have a config file in 'app/Config/sign_me_u
 		'email_field' => 'email',
 		'email_layout' => 'default',
  		'password_field' => 'password',
+		'from' => 'MyDomain.com <admin@exampledomain.com>',
+		'layout' => 'default',
+		'welcome_subject' => 'Welcome to MyDomain.com %username%!',
+		'activation_subject' => 'Activate Your MyDomain.com Account %username%!',
+		'sendAs' => 'html',
 		'activation_template' => 'activate',
 		'welcome_template' => 'welcome',
 		'password_reset_template' => 'forgotten_password',
@@ -82,6 +97,10 @@ SignMeUp 2.0 uses CakeEmail, so you will need to add in your email settings into
 		'from' => 'me@me.com',
 		//'charset' => 'utf-8',
 		//'headerCharset' => 'utf-8',
+		'password_reset_subject' => 'Password reset from MyDomain.com',
+		'new_password_template' => 'new_password',
+		'new_password_subject' => 'Your new password from MyDomain.com',
+		'xMailer' => 'MyDomain.com Email-bot',
 	);
 
 Also note you can include fields in the subject line from your user model. Simply specify the field name you want placed in the subject line with %field_name%. Apart from that the only other things required is that you set up the email layout & views, examples being:
