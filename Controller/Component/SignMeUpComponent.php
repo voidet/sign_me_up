@@ -61,7 +61,7 @@ class SignMeUpComponent extends Component {
 	}
 
 	private function __parseEmailSubject($action = '', $user = array()) {
-		$subject = $this->settings->{$action.'_subject'};
+		$subject = $this->settings[$action.'_subject'];
 		preg_match_all('/%(\w+?)%/', $subject, $matches);
 		$foundMatch = false;
 		foreach ($matches[1] as $match) {
