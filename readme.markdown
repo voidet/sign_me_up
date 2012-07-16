@@ -62,11 +62,9 @@ Sign Me Up also comes with 3 elements for your views, which don't have to be use
 
 Currently Forgotten Passwords are based on the user's email address entered into the form. If there is any request for this to be based on another field I will review.
 
-Next up the plugin requires that you have a config file in 'app/Config/sign_me_up.php'. SignMeUp configuration allows you to overwrite all default CakePHP email parameters by simply specifying the elements in the SignMeUp configuration array i.e change email sending to HTML format via setting the sendAs to HTML or change the email layout with 'layout' => 'myLayout'. The only thing that you would need to diverge from the Email Component settings with is the welcome and activate templates. You can set them with welcome_template and activation_template elements:
+Next up the plugin requires that you have a config file in 'app/Config/email.php'. SignMeUp configuration allows you to overwrite all default CakePHP email parameters by simply specifying the elements in the SignMeUp configuration array i.e change email sending to HTML format via setting the sendAs to HTML or change the email layout with 'layout' => 'myLayout'. The only thing that you would need to diverge from the Email Component settings with is the welcome and activate templates. You can set them with welcome_template and activation_template elements. SignMeUp 2.0 uses CakeEmail, so you will need to add in your email settings into app/Config/email.php under the $signMeUp config:
 
-	<?php
-
-	$config['SignMeUp'] = array(
+	public $signMeUp = array(
 		'activation_field' => 'activation_code',
 		'useractive_field' => 'active',
 		'login_after_activation' => false,
@@ -88,19 +86,6 @@ Next up the plugin requires that you have a config file in 'app/Config/sign_me_u
 		'password_reset_subject' => 'Password Reset Request',
 		'new_password_template' => 'recovered_password',
 		'new_password_subject' => 'Your new Password'
-	);
-
-SignMeUp 2.0 uses CakeEmail, so you will need to add in your email settings into app/Config/email.php under the $signMeUp config:
-
-	public $signMeUp = array(
-		'transport' => 'Mail',
-		'from' => 'me@me.com',
-		//'charset' => 'utf-8',
-		//'headerCharset' => 'utf-8',
-		'password_reset_subject' => 'Password reset from MyDomain.com',
-		'new_password_template' => 'new_password',
-		'new_password_subject' => 'Your new password from MyDomain.com',
-		'xMailer' => 'MyDomain.com Email-bot',
 	);
 
 Also note you can include fields in the subject line from your user model. Simply specify the field name you want placed in the subject line with %field_name%. Apart from that the only other things required is that you set up the email layout & views, examples being:
