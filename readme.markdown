@@ -6,7 +6,7 @@ Sign Me Up is a CakePHP plugin that takes out 99% of the work needed to develop 
 Install the plugin:
 
 	cd myapp/app/Plugin/
-	git clone git@github.com:voidet/sign_me_up.git sign_me_up
+	git clone git@github.com:kvcummins/sign_me_up.git sign_me_up
 
 ##Load the Plugin
 Next up open up app/Config/bootstrap.php
@@ -62,19 +62,23 @@ Sign Me Up also comes with 3 elements for your views, which don't have to be use
 
 Currently Forgotten Passwords are based on the user's email address entered into the form. If there is any request for this to be based on another field I will review.
 
-Next up the plugin requires that you have a config file in 'app/Config/email.php'. SignMeUp configuration allows you to overwrite all default CakePHP email parameters by simply specifying the elements in the SignMeUp configuration array i.e change email sending to HTML format via setting the sendAs to HTML or change the email layout with 'layout' => 'myLayout'. The only thing that you would need to diverge from the Email Component settings with is the welcome and activate templates. You can set them with welcome_template and activation_template elements. SignMeUp 2.0 uses CakeEmail, so you will need to add in your email settings into app/Config/email.php under the $signMeUp config:
+SignMeUp configuration allows you to overwrite all default CakePHP email parameters by simply specifying the elements in the SignMeUp configuration array i.e change email sending to HTML format via setting the sendAs to HTML or change the email layout with 'layout' => 'myLayout'. The only thing that you would need to diverge from the Email Component settings with is the welcome and activate templates. You can set them with welcome_template and activation_template elements:
 
-	public $signMeUp = array(
-		'activation_field' => 'activation_code',
-		'useractive_field' => 'active',
-		'login_after_activation' => false,
-		'welcome_subject' => 'Welcome',
-		'activation_subject' => 'Please Activate Your Account',
-		'password_reset_field' => 'password_reset',
-		'username_field' => 'username',
-		'email_field' => 'email',
-		'email_layout' => 'default',
- 		'password_field' => 'password',
+These can be left as the default values, configured in your bootstrap.php file via 
+
+	<?php Configure::write('SignMeUp', array(...)); ?>
+
+or in the component configuration in the Controller and/or Model configuration in the Model.
+
+	<?php $components = array('SignMeUp.SignMeUp' => array(...)); ?>
+	
+	<?php $actsAs = array('SignMeUp.SignMeUp' => array(...)); ?>
+
+The component and behavior settings have precedence over the bootstrap settings, which have precedence over the defaults:
+
+	<?php
+
+	$defaults = array(
 		'from' => 'MyDomain.com <admin@exampledomain.com>',
 		'layout' => 'default',
 		'welcome_subject' => 'Welcome to MyDomain.com %username%!',
@@ -82,10 +86,14 @@ Next up the plugin requires that you have a config file in 'app/Config/email.php
 		'sendAs' => 'html',
 		'activation_template' => 'activate',
 		'welcome_template' => 'welcome',
+		'password_reset_field' => 'password_reset',
 		'password_reset_template' => 'forgotten_password',
-		'password_reset_subject' => 'Password Reset Request',
-		'new_password_template' => 'recovered_password',
-		'new_password_subject' => 'Your new Password'
+		'password_reset_subject' => 'Password reset from MyDomain.com',
+		'new_password_template' => 'new_password',
+		'new_password_subject' => 'Your new password from MyDomain.com',
+		'xMailer' => 'MyDomain.com Email-bot',
+		'useractive_field' => 'active',
+		'useractive_value' => true
 	);
 
 Also note you can include fields in the subject line from your user model. Simply specify the field name you want placed in the subject line with %field_name%. Apart from that the only other things required is that you set up the email layout & views, examples being:
@@ -148,7 +156,6 @@ In order to set up your users table for activation, registration, or forgotten p
 	Router::connect('/register', array('controller' => 'users', 'action' => 'register'));
 	Router::connect('/activate', array('controller' => 'users', 'action' => 'activate'));
 	Router::connect('/activate/:activation_code', array('controller' => 'users', 'action' => 'activate'), array('pass' => 'activation_code'));
-	Router::connect('/forgotten_password, array('controller' => 'users', 'action' => 'forgotten_password'));
 	Router::connect('/forgotten_password/:password_reset', array('controller' => 'users', 'action' => 'forgotten_password'), array('pass' => 'password_reset_code'));
 	Router::connect('/login', array('controller' => 'users', 'action' => 'login'));
 	Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'));
